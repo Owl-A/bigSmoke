@@ -5,12 +5,13 @@ import numpy as np
 ### Default Values
 
 __n=20              # Number of days prior data
-__n_nodes_hl1=40    # nodes in layer one of TDNN
-__epochs=100        # iterations for convergence of TDNN 
+__n_nodes_hl1=2*__n # nodes in layer one of TDNN
+__epochs=10000      # iterations for convergence of TDNN 
 __batch_size=100    # the batch size for batch gradient descent
 __n_cls=1           # the number of perceptrons in output layer
 __margin=10.0       # [ DEBUG ] tolerance to misprediction in currency units 
-__debug=1           # [ DEBUG ] enable debug mode
+__debug=0           # [ DEBUG ] enable debug mode
+__Lm=500            # [ DEBUG ] the sample points bellow cardinal value __Lm are test set 
 
 def eval_neural_network(data, w1, w2, b1, b2, n=__n, n_nodes_hl1=__n_nodes_hl1, n_cls=__n_cls, batch_size = __batch_size):
     l1 = tf.add(tf.matmul(data,w1), b1)
@@ -42,10 +43,10 @@ def get_file_data(savefile, n=__n, n_nodes_hl1=__n_nodes_hl1, n_cls=__n_cls, epo
     train_y[:,0] = dat[n:]
     train_x = np.transpose(train_x)
     if __debug == 1:
-        test_x = train_x[500:]
-        test_y = train_y[500:]
-        train_x = train_x[:500]
-        train_y = train_y[:500]
+        test_x = train_x[:__Lm]
+        test_y = train_y[:__Lm]
+        train_x = train_x[__Lm:]
+        train_y = train_y[__Lm:]
     
         return train_x, train_y, test_x, test_y
     else:
@@ -113,4 +114,4 @@ def load_and_run_neural_network(savefile, Data, n=__n, n_nodes_hl1=__n_nodes_hl1
         #    print i.name
         res = sess.run(res)[0][0]
         sess.close()
-        print(res)
+        return res
